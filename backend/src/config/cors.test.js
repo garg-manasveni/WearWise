@@ -28,6 +28,12 @@ test("CORS allows explicitly listed additional frontend origins", async () => {
   assert.equal(await checkOrigin(options, "https://preview.wearwise.example"), true);
 });
 
+test("CORS normalizes a trailing slash in a configured origin", async () => {
+  const options = createCorsOptions({ CLIENT_ORIGIN: "https://wearwise.example/" });
+
+  assert.equal(await checkOrigin(options, "https://wearwise.example"), true);
+});
+
 test("CORS permits requests without a browser Origin header", async () => {
   const options = createCorsOptions({ CLIENT_ORIGIN: "http://localhost:5173" });
 

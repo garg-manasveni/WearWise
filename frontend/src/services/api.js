@@ -1,4 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import { normalizeApiBaseUrl } from "./apiUrl.js";
+
+const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_URL);
 let unauthorizedHandler = () => {};
 
 export function setUnauthorizedHandler(handler) {
