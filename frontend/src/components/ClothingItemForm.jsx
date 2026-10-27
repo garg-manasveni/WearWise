@@ -58,6 +58,11 @@ export default function ClothingItemForm({ item, token, onSave, onCancel }) {
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const localPreview = useMemo(() => (file ? URL.createObjectURL(file) : ""), [file]);
+  const hasSavedDetails = Boolean(
+    item && (item.category || item.color || item.secondaryColor || item.styleTags?.length
+      || item.occasions?.length || item.seasons?.length || item.weather?.length || item.comfortNotes),
+  );
+  const [showDetails, setShowDetails] = useState(Boolean(item && hasSavedDetails));
 
   useEffect(() => () => {
     if (localPreview) URL.revokeObjectURL(localPreview);
@@ -72,8 +77,6 @@ export default function ClothingItemForm({ item, token, onSave, onCancel }) {
     event.preventDefault();
     setError("");
     if (!values.name.trim()) return setError("Give this piece a name.");
-    if (!values.category) return setError("Choose a clothing category.");
-    if (!values.color.trim()) return setError("Enter its primary colour.");
     if (!item && !file) return setError("Choose a photo for this clothing item.");
     if (values.styleTags.split(",").filter((tag) => tag.trim()).length > 12) {
       return setError("Add no more than 12 style tags.");
@@ -133,37 +136,46 @@ export default function ClothingItemForm({ item, token, onSave, onCancel }) {
               }}
             />
           </label>
-          <p className="field-note">JPEG, PNG or WebP · up to 5 MB</p>
+          <p className="field-note">JPEG, PNG or WebP · up to 5 MB. Clothing photo analysis is not configured.</p>
         </div>
 
         <div className="item-form-fields">
-          <div className="form-grid-two">
-            <label className="field-label">Item name
-              <input name="name" value={values.name} onChange={updateField} maxLength={80} placeholder="e.g. Linen shirt" required />
-            </label>
-            <label className="field-label">Category
-              <select name="category" value={values.category} onChange={updateField} required>
-                <option value="">Select category</option>
-                {CATEGORIES.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}
-              </select>
-            </label>
-            <label className="field-label">Primary colour
-              <input name="color" list="wardrobe-colors" value={values.color} onChange={updateField} maxLength={40} placeholder="e.g. Ivory" required />
-              <datalist id="wardrobe-colors">{COLORS.map((color) => <option key={color} value={color} />)}</datalist>
-            </label>
-            <label className="field-label">Secondary colour <span className="field-optional">optional</span>
-              <input name="secondaryColor" list="wardrobe-colors" value={values.secondaryColor} onChange={updateField} maxLength={40} placeholder="If it has one" />
-            </label>
-          </div>
-          <label className="field-label">Style tags <span className="field-optional">comma separated</span>
-            <input name="styleTags" value={values.styleTags} onChange={updateField} placeholder="e.g. relaxed, classic, minimal" />
+          <label className="field-label">Item name
+            <input name="name" value={values.name} onChange={updateField} maxLength={80} placeholder="e.g. Linen shirt" required />
           </label>
-          <ChoiceGroup label="Suitable occasions" options={OCCASIONS} selected={values.occasions} onChange={(occasions) => setValues((current) => ({ ...current, occasions }))} />
-          <ChoiceGroup label="Season" options={SEASONS} selected={values.seasons} onChange={(seasons) => setValues((current) => ({ ...current, seasons }))} />
-          <ChoiceGroup label="Weather" options={WEATHER} selected={values.weather} onChange={(weather) => setValues((current) => ({ ...current, weather }))} />
-          <label className="field-label">Comfort notes <span className="field-optional">optional</span>
-            <textarea name="comfortNotes" value={values.comfortNotes} onChange={updateField} maxLength={300} rows={2} placeholder="Soft fabric, easy to move in…" />
-          </label>
+          <p className="field-note">Only the name and photo are required. Clothing details are optional, but a category helps recommendations use this piece.</p>
+          <details
+            className="item-details-disclosure"
+            open={showDetails}
+            onToggle={(event) => setShowDetails(event.currentTarget.open)}
+          >
+            <summary>Complete clothing details (optional)</summary>
+            <p className="field-note">WearWise does not analyze clothing photos automatically. Add or correct these details yourself; they are used for outfit recommendations.</p>
+            <div className="form-grid-two">
+              <label className="field-label">Category <span className="field-optional">optional</span>
+                <select name="category" value={values.category} onChange={updateField}>
+                  <option value="">Not classified</option>
+                  {CATEGORIES.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}
+                </select>
+              </label>
+              <label className="field-label">Primary colour <span className="field-optional">optional</span>
+                <input name="color" list="wardrobe-colors" value={values.color} onChange={updateField} maxLength={40} placeholder="e.g. Ivory" />
+                <datalist id="wardrobe-colors">{COLORS.map((color) => <option key={color} value={color} />)}</datalist>
+              </label>
+              <label className="field-label">Secondary colour <span className="field-optional">optional</span>
+                <input name="secondaryColor" list="wardrobe-colors" value={values.secondaryColor} onChange={updateField} maxLength={40} placeholder="If it has one" />
+              </label>
+            </div>
+            <label className="field-label">Style tags <span className="field-optional">comma separated</span>
+              <input name="styleTags" value={values.styleTags} onChange={updateField} placeholder="e.g. relaxed, classic, minimal" />
+            </label>
+            <ChoiceGroup label="Suitable occasions" options={OCCASIONS} selected={values.occasions} onChange={(occasions) => setValues((current) => ({ ...current, occasions }))} />
+            <ChoiceGroup label="Season" options={SEASONS} selected={values.seasons} onChange={(seasons) => setValues((current) => ({ ...current, seasons }))} />
+            <ChoiceGroup label="Weather" options={WEATHER} selected={values.weather} onChange={(weather) => setValues((current) => ({ ...current, weather }))} />
+            <label className="field-label">Comfort notes <span className="field-optional">optional</span>
+              <textarea name="comfortNotes" value={values.comfortNotes} onChange={updateField} maxLength={300} rows={2} placeholder="Soft fabric, easy to move in…" />
+            </label>
+          </details>
         </div>
       </div>
 

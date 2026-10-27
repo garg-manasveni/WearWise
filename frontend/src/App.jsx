@@ -3,11 +3,12 @@ import AppShell from "./components/AppShell.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
-import PlaceholderPage from "./pages/PlaceholderPage.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import WardrobePage from "./pages/WardrobePage.jsx";
 import StyleProfilePage from "./pages/StyleProfilePage.jsx";
 import OutfitFinderPage from "./pages/OutfitFinderPage.jsx";
+import OutfitStudioPage from "./pages/OutfitStudioPage.jsx";
 
 export default function App() {
   return (
@@ -20,14 +21,11 @@ export default function App() {
           <Route path="/wardrobe" element={<WardrobePage />} />
           <Route path="/outfit-finder" element={<OutfitFinderPage />} />
           <Route path="/style-profile" element={<StyleProfilePage />} />
-          <Route
-            path="/outfit-studio"
-            element={<PlaceholderPage title="Outfit Studio" eyebrow="Your styling space" />}
-          />
+          <Route path="/outfit-studio" element={<OutfitStudioPage />} />
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

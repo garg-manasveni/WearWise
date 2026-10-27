@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import EmptyState from "../components/EmptyState.jsx";
 import OutfitCard from "../components/OutfitCard.jsx";
+import RequestError from "../components/RequestError.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import {
   COLORS, COMFORT_PREFERENCES, OCCASIONS, STYLES, WEATHER,
@@ -10,20 +11,24 @@ import { api } from "../services/api.js";
 import WardrobePhoto from "../components/WardrobePhoto.jsx";
 
 const INITIAL_PREFERENCES = {
-  occasion: "college",
+  occasion: "",
   customOccasion: "",
-  mood: "comfortable",
+  mood: "",
   style: "",
   color: "",
   weather: "",
   comfort: "",
   anchorItemId: "",
+  avoidRecentlyWorn: false,
+  recentDays: 30,
 };
 
 const MOODS = ["comfortable", "confident", "elegant", "playful", "relaxed", "experimental"];
 const SEASONS = ["spring", "summer", "autumn", "winter"];
 
-function OutfitFinderForm({ preferences, setPreferences, profile, wardrobe, onSubmit, isLoading }) {
+function OutfitFinderForm({
+  preferences, setPreferences, profile, wardrobe, onSubmit, onStyleToday, isLoading,
+}) {
   function update(event) {
     const { name, value } = event.target;
     setPreferences((current) => ({ ...current, [name]: value }));
@@ -39,17 +44,19 @@ function OutfitFinderForm({ preferences, setPreferences, profile, wardrobe, onSu
       <div className="finder-fields">
         <label className="field-label">The occasion
           <select name="occasion" value={preferences.occasion} onChange={update}>
+            <option value="">Any occasion</option>
             {OCCASIONS.map((occasion) => <option key={occasion} value={occasion}>{occasion}</option>)}
             <option value="custom">Something else…</option>
           </select>
         </label>
         {preferences.occasion === "custom" && (
           <label className="field-label">Your occasion
-            <input name="customOccasion" value={preferences.customOccasion} onChange={update} placeholder="e.g. gallery opening" maxLength={60} required />
+            <input name="customOccasion" value={preferences.customOccasion} onChange={update} placeholder="e.g. gallery opening" maxLength={60} />
           </label>
         )}
         <label className="field-label">The mood
           <select name="mood" value={preferences.mood} onChange={update}>
+            <option value="">Any mood</option>
             {MOODS.map((mood) => <option key={mood} value={mood}>{mood}</option>)}
           </select>
         </label>
@@ -85,11 +92,39 @@ function OutfitFinderForm({ preferences, setPreferences, profile, wardrobe, onSu
             {wardrobe.map((item) => <option key={item._id} value={item._id}>{item.name} · {item.category}</option>)}
           </select>
         </label>
+        <div className="finder-repetition">
+          <label className="finder-repeat-toggle">
+            <input
+              type="checkbox"
+              name="avoidRecentlyWorn"
+              checked={preferences.avoidRecentlyWorn}
+              onChange={(event) => setPreferences((current) => ({
+                ...current,
+                avoidRecentlyWorn: event.target.checked,
+              }))}
+            />
+            Avoid looks worn recently
+          </label>
+          {preferences.avoidRecentlyWorn && (
+            <label className="field-label">Recent-use period
+              <select name="recentDays" value={preferences.recentDays} onChange={update}>
+                {[7, 14, 30, 60, 90, 180, 365].map((days) => (
+                  <option key={days} value={days}>{days} days</option>
+                ))}
+              </select>
+            </label>
+          )}
+        </div>
       </div>
       <p className="profile-privacy-note">Your optional complexion and undertone notes never restrict outfit colours. Every colour and style is for everyone.</p>
-      <button className="button button-primary finder-submit" type="submit" disabled={isLoading}>
-        {isLoading ? "Considering your pieces…" : "Find my outfits"} <span aria-hidden="true">↗</span>
-      </button>
+      <div className="finder-submit-actions">
+        <button className="button button-primary finder-submit" type="button" onClick={onStyleToday} disabled={isLoading}>
+          {isLoading ? "Considering your pieces…" : "Style me today"} <span aria-hidden="true">↗</span>
+        </button>
+        <button className="button button-secondary finder-submit" type="submit" disabled={isLoading}>
+          {isLoading ? "Considering your pieces…" : "Use these preferences"} <span aria-hidden="true">↗</span>
+        </button>
+      </div>
     </form>
   );
 }
@@ -165,22 +200,18 @@ export default function OutfitFinderPage() {
     loadPage();
   }, [loadPage]);
 
-  async function submitFinder(event) {
-    event.preventDefault();
+  async function findOutfits(includeRecentlyWorn = false, selectedPreferences = preferences) {
     setError("");
     setNotice("");
-    const occasion = preferences.occasion === "custom"
-      ? preferences.customOccasion.trim()
-      : preferences.occasion;
-    if (!occasion) {
-      setError("Enter the occasion so your outfit ideas have a starting point.");
-      return;
-    }
+    const occasion = selectedPreferences.occasion === "custom"
+      ? selectedPreferences.customOccasion.trim()
+      : selectedPreferences.occasion;
     setIsFinding(true);
     try {
       const result = await api.recommendOutfits({
-        ...preferences,
+        ...selectedPreferences,
         occasion,
+        includeRecentlyWorn,
       }, token);
       setResults(result);
       setSelectedItems({});
@@ -189,6 +220,17 @@ export default function OutfitFinderPage() {
     } finally {
       setIsFinding(false);
     }
+  }
+
+  async function submitFinder(event) {
+    event.preventDefault();
+    await findOutfits();
+  }
+
+  async function styleMeToday() {
+    const dailyPreferences = { ...INITIAL_PREFERENCES };
+    setPreferences(dailyPreferences);
+    await findOutfits(false, dailyPreferences);
   }
 
   async function saveRecommendedOutfit(candidateKey, payload, occasion) {
@@ -236,6 +278,7 @@ export default function OutfitFinderPage() {
   const occasionLabel = preferences.occasion === "custom"
     ? preferences.customOccasion.trim()
     : preferences.occasion;
+  const savedOccasion = occasionLabel || "Everyday";
 
   return (
     <div className="finder-page">
@@ -248,7 +291,7 @@ export default function OutfitFinderPage() {
         <span className="finder-ornament" aria-hidden="true">✳</span>
       </section>
 
-      {error && <div className="inline-error" role="alert"><p>{error}</p><button className="text-button" onClick={loadPage}>Reload</button></div>}
+      <RequestError message={error} onRetry={loadPage} retryLabel="Reload data" />
       {notice && <p className="success-message" role="status">{notice}</p>}
       {wardrobe.length === 0 && (
         <div className="wardrobe-prompt">
@@ -263,8 +306,8 @@ export default function OutfitFinderPage() {
           setPreferences={setPreferences}
           profile={profile}
           wardrobe={wardrobe}
-          token={token}
           onSubmit={submitFinder}
+          onStyleToday={styleMeToday}
           isLoading={isFinding}
         />
         <section className="recommendation-column" aria-live="polite">
@@ -275,10 +318,20 @@ export default function OutfitFinderPage() {
           ) : (
             <>
               <div className="recommendation-heading">
-                <div><p className="eyebrow">YOUR EDIT FOR {occasionLabel.toUpperCase()}</p><h2>{results.recommendations.length ? "A few ways to wear it." : "A place to begin."}</h2></div>
-                <span>{results.recommendations.length || results.closestOptions.length} IDEAS</span>
+                <div><p className="eyebrow">YOUR EDIT FOR {(occasionLabel || "EVERYDAY").toUpperCase()}</p><h2>{results.recommendations.length ? "A few ways to wear it." : "A place to begin."}</h2></div>
+                <span>{results.recommendations.length || results.closestOptions.length || results.recentlyWornRecommendations.length} IDEAS</span>
               </div>
-              {results.message && <p className="recommendation-message">{results.message}</p>}
+              {results.message && (
+                <p className="recommendation-message">
+                  {results.message}
+                  {results.metadataIncomplete && <> <Link to="/wardrobe">Complete clothing details</Link>.</>}
+                </p>
+              )}
+              {results.allRecentlyWorn && (
+                <button className="button button-secondary finder-show-recent" type="button" onClick={() => findOutfits(true)} disabled={isFinding}>
+                  {isFinding ? "Checking your lookbook…" : "Show recently worn looks anyway"} <span aria-hidden="true">↗</span>
+                </button>
+              )}
               <div className="recommendation-list">
                 {[...results.recommendations, ...results.closestOptions].map((outfit) => {
                   const key = outfit.itemIds.join("-");
@@ -289,7 +342,7 @@ export default function OutfitFinderPage() {
                       wardrobe={wardrobe}
                       token={token}
                       outfitKey={key}
-                      occasion={occasionLabel}
+                      occasion={savedOccasion}
                       selectedItems={selectedItems[key] || {}}
                       onChangeItem={(outfitKey, category, item) => {
                         setSelectedItems((current) => ({
@@ -298,7 +351,7 @@ export default function OutfitFinderPage() {
                         }));
                       }}
                       onFindAlternatives={requestAlternatives}
-                      onSave={(payload) => saveRecommendedOutfit(key, payload, occasionLabel)}
+                      onSave={(payload) => saveRecommendedOutfit(key, payload, savedOccasion)}
                       saving={savingKey === key}
                     />
                   );

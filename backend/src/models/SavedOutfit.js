@@ -10,10 +10,14 @@ const savedOutfitSchema = new mongoose.Schema(
     },
     name: { type: String, required: true, trim: true, maxlength: 80 },
     occasion: { type: String, required: true, trim: true, maxlength: 60 },
+    notes: { type: String, trim: true, maxlength: 500, default: "" },
     itemIds: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "ClothingItem",
       required: true,
+    }],
+    wornHistory: [{
+      wornAt: { type: Date, required: true },
     }],
   },
   { timestamps: true },

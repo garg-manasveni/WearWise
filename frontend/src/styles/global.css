@@ -2,10 +2,10 @@
 
 * { box-sizing: border-box; }
 body { min-width: 320px; min-height: 100vh; margin: 0; }
-button, input { font: inherit; }
+button, input, select, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; }
-button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid rgb(143 118 168 / 45%); outline-offset: 3px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid rgb(143 118 168 / 45%); outline-offset: 3px; }
 h1, h2, h3, p { margin-top: 0; }
 h1, h2, h3 { font-family: var(--font-editorial); font-weight: 500; }
 .eyebrow { margin: 0 0 14px; color: var(--color-lavender-dark); font-size: 10px; font-weight: 700; letter-spacing: .16em; }

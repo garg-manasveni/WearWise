@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import ClothingItemCard from "../components/ClothingItemCard.jsx";
 import ClothingItemForm from "../components/ClothingItemForm.jsx";
 import EmptyState from "../components/EmptyState.jsx";
+import RequestError from "../components/RequestError.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { CATEGORIES, COLORS } from "../constants/styleOptions.js";
 import { api } from "../services/api.js";
@@ -118,7 +119,7 @@ export default function WardrobePage() {
           }}
         />
       )}
-      {error && <div className="inline-error" role="alert"><p>{error}</p><button className="text-button" onClick={loadItems}>Try again</button></div>}
+      <RequestError message={error} onRetry={loadItems} />
 
       {isLoading ? (
         <div className="feature-loading" aria-live="polite"><span className="loading-mark" /><p>Opening your wardrobe…</p></div>

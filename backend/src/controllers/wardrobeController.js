@@ -27,8 +27,8 @@ function escapeRegex(value) {
 
 function validateFields(fields) {
   if (!fields.name || fields.name.length > 80) return "Item name is required and must be 80 characters or fewer.";
-  if (!CATEGORIES.includes(fields.category)) return "Choose a valid clothing category.";
-  if (!fields.color || fields.color.length > 40) return "Choose a primary colour (up to 40 characters).";
+  if (fields.category && !CATEGORIES.includes(fields.category)) return "Choose a valid clothing category.";
+  if (fields.color.length > 40) return "Primary colour must be 40 characters or fewer.";
   if (fields.secondaryColor.length > 40) return "Secondary colour must be 40 characters or fewer.";
   if (fields.styleTags.length > 12 || fields.styleTags.some((tag) => tag.length > 30)) {
     return "Add no more than 12 style tags, each 30 characters or fewer.";
@@ -216,5 +216,5 @@ async function getItemImage(request, response, next) {
 }
 
 module.exports = {
-  createItem, deleteItem, getItem, getItemImage, listItems, updateItem,
+  createItem, deleteItem, getItem, getItemImage, listItems, normalizeFields, updateItem, validateFields,
 };

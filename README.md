@@ -1,59 +1,87 @@
-# WearWise
+# WearWise — Your Personal Wardrobe & Outfit Stylist
 
-WearWise is a MERN wardrobe and outfit-styling project. Day 1 authentication
-remains in place. Day 2 adds an owner-scoped digital wardrobe, a personal style
-profile, rule-based outfit suggestions, and saved looks. Outfit Studio / avatar
-editing is intentionally still a placeholder.
+WearWise is a student-built MERN application for people who want to organise the clothes they own and make more considered outfit combinations. It keeps styling personal: recommendations use a user's saved wardrobe and preferences, and the optional style profile is never used to decide what someone is allowed to wear.
+
+## Features
+
+- Register, sign in, sign out, restore a saved session, and protect authenticated pages and API routes with JWT authentication.
+- Add, view, edit, search, filter, sort, and remove wardrobe items. Photos are uploaded and checked for type, size, and file signature.
+- Add a wardrobe item with only its name and photo; category, colours, occasion, season, weather, and style tags are optional manual details. No clothing-photo analysis provider is configured, so WearWise never claims to have classified an image automatically.
+- Save a personal style profile with preferred styles, favourite and avoided colours, comfort and fit preferences, and optional self-described height, complexion, and undertone notes.
+- Get transparent, rule-based outfit suggestions made only from clothes in the user's wardrobe. Swap a piece, ask for alternatives, and save a suggested look.
+- Use Outfit Studio to select wardrobe items and manually layer the actual clothing photos over an illustrated 2D avatar. Drag and resize each photo, choose a default illustrated avatar, or optionally generate a new personalized character from a face photo using OpenAI's Images API. Save a named look with occasion and notes.
+- Mark saved looks as worn, retain dated wear history, and optionally exclude combinations worn during a chosen recent-use period when finding outfits.
+- View a useful not-found page, loading and empty states, inline request errors, and success feedback.
+
+### Avatar limitation and photo privacy
+
+The Studio overlays selected wardrobe photos on an illustrated character; this is a manually arranged collage, **not realistic virtual try-on**. Photos with opaque backgrounds remain rectangular and may cover parts of the avatar. Optional personalized avatar creation sends a JPEG/PNG/WebP face reference (up to 5 MB) to OpenAI only after explicit consent. Express holds the reference in memory for the request and does not save it; only the generated PNG is kept in private local storage for that user's account. OpenAI states API data is not used to train models by default, while abuse-monitoring logs may retain content for up to 30 days. Image generation incurs usage-based charges; check the current [OpenAI image pricing](https://developers.openai.com/api/docs/pricing) before enabling it. A generated character is a stylized interpretation, not a guaranteed likeness or a realistic body. Users can regenerate it, remove it, or use the default SVG avatar. If no API key is configured, the default avatar and Studio remain usable. This service is separate from wardrobe photos; **no clothing-image analysis or virtual try-on provider is configured**.
+
+## Tech stack and structure
+
+- **Frontend:** React, Vite, JavaScript, React Router, Context API, plain CSS.
+- **Backend:** Node.js, Express, JavaScript, REST APIs.
+- **Database:** MongoDB with Mongoose.
+- **Authentication:** bcrypt password hashing and JWT bearer tokens.
+- **Photo storage:** local disk for development, accessed through authenticated owner-checked image routes.
+
+```text
+WearWise/
+  backend/
+    server.js
+    src/
+      config/          MongoDB connection
+      controllers/     request validation and user-scoped operations
+      middleware/      JWT authentication and image-upload validation
+      models/          User, ClothingItem, StyleProfile, SavedOutfit
+      routes/          Express REST endpoints
+      services/        recommendation and avatar provider logic with unit tests
+  frontend/
+    src/
+      components/      shared shell, clothing and outfit UI, errors
+      constants/       wardrobe, style, colour and occasion options
+      context/         authenticated user state
+      pages/           dashboard, wardrobe, finder, studio, profile, auth
+      services/        shared API client
+      styles/          design tokens and page-specific CSS
+```
 
 ## Requirements
 
-- Node.js 20 or newer and npm
-- MongoDB running locally, or a MongoDB Atlas connection string
+- Node.js 20 or newer and npm.
+- MongoDB running locally, or a MongoDB Atlas cluster and database user.
 
-## Environment setup
+## Setup
 
-From the project root, copy the safe template for the backend:
+### 1. Configure the backend
+
+In PowerShell, from the project root:
 
 ```powershell
 Copy-Item backend\.env.example backend\.env
 ```
 
-Edit `backend\.env` and set:
+Edit `backend\.env` locally:
 
-- `MONGODB_URI`: local MongoDB URL or your MongoDB Atlas connection string
-- `JWT_SECRET`: a private random secret, never commit it
-- `PORT`: API port; defaults to `5000`
-- `JWT_EXPIRES_IN`: token lifetime; defaults to `1h`
-- `CLIENT_ORIGIN`: frontend origin; defaults to `http://localhost:5173`
-- `DNS_SERVERS`: optional comma-separated DNS resolvers; only needed if Node's
-  default SRV lookup cannot resolve Atlas
-- `UPLOAD_DIR`: local photo directory; defaults to `uploads` under `backend/`
+| Variable | Purpose |
+|---|---|
+| `PORT` | API port; defaults to `5000`. |
+| `MONGODB_URI` | Local MongoDB URL or Atlas connection string. |
+| `JWT_SECRET` | Private, long, randomly generated signing secret. |
+| `JWT_EXPIRES_IN` | JWT lifetime; defaults to `1h`. |
+| `CLIENT_ORIGIN` | Frontend origin allowed by CORS; defaults to `http://localhost:5173`. |
+| `DNS_SERVERS` | Optional comma-separated DNS server addresses, only if Atlas SRV DNS lookup fails on your network. |
+| `UPLOAD_DIR` | Local photo directory; defaults to `uploads` under `backend/`. |
+| `OPENAI_API_KEY` | Optional private server-side API key. Enables personalized avatar generation; never put it in frontend variables. |
+| `OPENAI_AVATAR_MODEL` | Optional image-generation model override; defaults to `gpt-image-2.5-sunburst`. |
 
-The root `.env.example` contains the same safe development placeholders. Never
-commit `.env`; `.gitignore` excludes environment files and uploaded photos.
+Never commit `.env` or paste real credentials into source code, examples, public issues, or chat. `.env.example` files intentionally contain placeholders only.
 
-The frontend API defaults to `http://localhost:5000/api`. If your backend URL
-differs, copy `frontend/.env.example` to `frontend/.env` and set
-`VITE_API_URL=http://your-api-host:port/api`.
+Personalized avatar creation is optional. To enable it, create an OpenAI API project with access to the Images API and configure its API key as `OPENAI_API_KEY` in `backend\.env`. API usage is billed separately from a ChatGPT subscription; the per-image cost varies with the selected model and output settings, so check the current [OpenAI image pricing](https://developers.openai.com/api/docs/pricing) before testing. If the key is absent or invalid, use the built-in illustrated avatar instead.
 
-## Photo storage
+### 2. Install and start the backend
 
-No Cloudinary credentials are configured, so clothing photos use local disk
-storage during development. Uploads accept JPEG, PNG, and WebP files up to 5 MB.
-The backend validates the file signature, stores a random filename in
-`backend/uploads/`, and serves the photo through an authenticated endpoint that
-checks wardrobe ownership. Photos are not stored as base64 in MongoDB.
-
-Local disk is suitable for development, but is not durable or shared across
-instances on many cloud hosts. Deployments with ephemeral filesystems can lose
-uploads on restart, and multiple API instances will not share them. Before
-deploying, configure durable private object storage or Cloudinary, migrate
-existing files, and preserve the same authenticated ownership check. No paid
-image service is integrated by this milestone.
-
-## Install and run
-
-In **Terminal 1**, from the backend folder:
+Open Terminal 1:
 
 ```powershell
 Set-Location "C:\path\to\WearWise\backend"
@@ -61,7 +89,11 @@ npm.cmd install
 npm.cmd run dev
 ```
 
-In **Terminal 2**, from the frontend folder:
+Wait for the MongoDB connection message and the API listening message.
+
+### 3. Install and start the frontend
+
+Open Terminal 2:
 
 ```powershell
 Set-Location "C:\path\to\WearWise\frontend"
@@ -69,113 +101,144 @@ npm.cmd install
 npm.cmd run dev
 ```
 
-Open the Vite URL printed in Terminal 2, normally `http://localhost:5173`.
-Keep both terminals running. On PowerShell, `npm.cmd` avoids the script-policy
-issue that can prevent `npm` from running.
+Open the Vite URL, normally `http://localhost:5173`. Keep both terminals running. `npm.cmd` is useful in Windows PowerShell when script execution policy blocks `npm`.
 
-## What is implemented
+The frontend API defaults to `http://localhost:5000/api`. If the API is elsewhere, create `frontend\.env` from `frontend\.env.example` and set `VITE_API_URL` to the API base URL.
 
-- **My Wardrobe**: add, view, edit, and remove clothing items with a photo,
-  category, primary/secondary colours, style tags, suitable occasions,
-  seasons, weather suitability, and comfort notes. Includes server-side
-  search, category/colour filters, sorting, photo preview, and delete
-  confirmation.
-- **My Style Profile**: stores preferred styles, favourite and avoided colours,
-  comfort choices, fit, styling notes, and optional height/complexion/undertone
-  preferences per user. Optional complexion notes are self-described only;
-  they are not inferred from photos and never restrict colours or styles.
-- **Outfit Finder**: requests an occasion, mood, style, colour, weather/season,
-  comfort choice, and optional anchor item. It returns only items saved by the
-  signed-in user, explains suggestions, supports piece swaps and alternatives,
-  and offers closest available pieces when a complete outfit is not possible.
-- **Saved outfits**: saves a name, occasion, and references to owned wardrobe
-  items. An item referenced by a saved outfit cannot be deleted until that
-  saved outfit is removed.
+## Photo storage and deployment
 
-## Recommendation logic (for your viva)
+No Cloudinary or other image-storage integration is configured. During local development, JPEG, PNG, and WebP files up to 5 MB are validated and saved under `backend/uploads/` with generated filenames. MongoDB stores the filename, not a base64 image. Image retrieval requires authentication and checks that the item belongs to the requesting user.
 
-`backend/src/services/recommendOutfits.js` is plain JavaScript with no AI or
-external styling service. It builds complete combinations from either
-top + bottom + shoes, or one-piece + shoes. Outerwear and accessories are
-optional. It first removes pieces with colours the user explicitly avoids and
-honours an anchor item if one was selected.
+Local disk is not durable or shared across many hosting platforms and multiple server instances. A deployment with an ephemeral filesystem can lose uploaded photos after a restart. Before deploying, configure durable private object storage or Cloudinary, migrate existing uploads, and preserve authenticated owner checks. There are no additional external-service credentials for the current local setup.
 
-Remaining combinations receive a readable weighted score: occasion tags (+5),
-requested style (+4), requested/favourite colours (+4/+3), mood tags (+3),
-comfort and weather matches (+2 each), preferred style/fit (+2/+1), and simple
-colour compatibility (+0 to +2 for each pair). Results are sorted by score;
-near-duplicate combinations sharing almost all of the same pieces are skipped.
-If there is no complete combination, the service returns real owned pieces
-with missing categories called out. It never fabricates a garment.
+## API route summary
 
-Run the recommender unit tests from `backend/`:
+All routes below require a bearer JWT except registration and login.
+
+| Method | Route | Purpose |
+|---|---|---|
+| `POST` | `/api/auth/register` | Create account and return a token. |
+| `POST` | `/api/auth/login` | Verify password and return a token. |
+| `GET` | `/api/auth/me` | Validate token and return current user. |
+| `GET` | `/api/wardrobe` | List owned items with search, filters, and sorting. |
+| `POST` | `/api/wardrobe` | Create item with multipart image and name (required); metadata fields are optional. |
+| `GET` | `/api/wardrobe/:id` | Read one owned item. |
+| `GET` | `/api/wardrobe/:id/image` | Retrieve an owned item's photo. |
+| `PATCH` | `/api/wardrobe/:id` | Update an owned item; optional replacement photo. |
+| `DELETE` | `/api/wardrobe/:id` | Delete an owned item if not referenced by a saved look. |
+| `GET` | `/api/style-profile` | Read the signed-in user's profile. |
+| `PUT` | `/api/style-profile` | Validate and save profile preferences. |
+| `POST` | `/api/outfits/recommend` | Generate suggestions from owned items and profile. Optional `avoidRecentlyWorn`, `recentDays`, and `includeRecentlyWorn` fields control repetition filtering. |
+| `GET` | `/api/outfits/saved` | List the signed-in user's saved outfits and wear history. |
+| `POST` | `/api/outfits/saved` | Save an outfit's name, occasion, notes, and owned item references. |
+| `POST` | `/api/outfits/saved/:id/worn` | Add a validated date to an owned saved outfit's wear history. |
+| `DELETE` | `/api/outfits/saved/:id` | Delete an owned saved outfit and its history. |
+| `GET` | `/api/avatar` | Return provider availability and the signed-in user's avatar metadata. |
+| `GET` | `/api/avatar/image` | Retrieve the signed-in user's generated avatar image. |
+| `POST` | `/api/avatar/generate` | Generate an avatar from multipart `image`, `style`, and explicit `consent` fields. |
+| `DELETE` | `/api/avatar` | Remove the signed-in user's generated avatar and use the default illustration. |
+
+Avatar generation requires `OPENAI_API_KEY`, an image file and `consent=true`. Supported styles are `polished_2d`, `soft_3d`, and `editorial`. The API key remains on Express; uploads use memory storage and are not written to disk. The generated image and style are saved on the authenticated user's record/private upload directory. All avatar routes require authentication and return only the current user's data. The backend also scopes wardrobe, profile, recommendation, saved-outfit, and image queries to the authenticated user. Saving a look verifies that every referenced clothing item belongs to that user.
+
+## Database model summary
+
+- **User:** name, normalized unique email, bcrypt-hashed password, and optional generated-avatar image key/style/time metadata. The private image key is excluded from normal queries.
+- **ClothingItem:** owner ID, name, category, colours, style/occasion/season/weather tags, comfort notes, and private local image key.
+- **StyleProfile:** one record per user with preference arrays, fit preference, notes, and optional height/complexion/undertone values.
+- **SavedOutfit:** owner ID, name, occasion, optional notes, references to owned clothing items, and a list of dated wear-history entries. Wear history is capped at the latest 100 entries per saved outfit.
+
+Clothing category and colour are optional in storage. Pieces without a category remain visible in the wardrobe but are skipped by the combination builder until the user completes their clothing details. No automatic clothing-photo analysis provider is configured; metadata entry is manual.
+
+## How recommendations work
+
+`backend/src/services/recommendOutfits.js` is plain, testable JavaScript. It does not call an AI or machine-learning service.
+
+1. It builds combinations from a top + bottom + shoes, or a dress + shoes. Outerwear and accessories are optional.
+2. It filters combinations containing colours the user explicitly chose to avoid, and honours an optional anchor item.
+3. It scores occasion tags, requested and profile styles, requested and favourite colours, mood tags, comfort and weather matches, preferred fit, and simple colour-pair compatibility.
+4. It sorts by score and skips combinations too similar to already selected options.
+5. Occasion and mood are optional. **Style me today** submits no occasion or mood filters and relies on the saved wardrobe and profile. If no complete combination is possible, it explains what is missing and can return a closest combination made from actual saved items. Items without a category are not guessed into a combination, and the response directs the user to complete their details.
+6. If recent-use avoidance is enabled, exact combinations with a saved wear date inside the selected period are omitted. If every complete option is omitted, the response explains why; the user can choose to show those looks anyway.
+
+Preferred styles, favourite colours, comfort choices, and fit tags influence ranking. Avoided colours are treated as an explicit exclusion. Optional height, complexion, and undertone notes are stored but do not constrain recommendations. All colours and styles are available to everyone.
+
+## Tests
+
+From `backend/`, run the rule-based recommendation tests:
 
 ```powershell
 npm.cmd test
 ```
 
-## API routes
+The test suite includes mocked avatar-provider request tests; it does not call OpenAI or verify live account billing.
 
-All wardrobe, profile, photo, outfit recommendation, and saved outfit routes
-require `Authorization: Bearer <JWT>`.
+From `frontend/`, create a production build:
 
-- `POST /api/wardrobe` — multipart form fields plus `image`
-- `GET /api/wardrobe?search=&category=&color=&sort=`
-- `GET /api/wardrobe/:id`
-- `GET /api/wardrobe/:id/image`
-- `PATCH /api/wardrobe/:id` — multipart fields; photo is optional
-- `DELETE /api/wardrobe/:id`
-- `GET /api/style-profile`
-- `PUT /api/style-profile`
-- `POST /api/outfits/recommend`
-- `GET /api/outfits/saved`
-- `POST /api/outfits/saved`
-- `DELETE /api/outfits/saved/:id`
+```powershell
+npm.cmd run build
+```
 
-Every database query is scoped by the authenticated user ID. Image retrieval
-also verifies ownership before sending a photo.
+## Manual demonstration checklist
 
-## Manual testing
+1. Register or sign in. Refresh the browser and confirm the session is restored; sign out and confirm protected pages send you to login. Test a malformed/expired token and confirm it is rejected and the frontend returns to an unauthenticated state.
+2. Add at least one wardrobe item with only a name and a photo; confirm it saves and is clearly marked as not classified. Edit it to add a category/colour and confirm the recommendations can use it. Add other wardrobe entries:
+   - `Ivory linen shirt` — Tops, Ivory, Casual/Classic tags, College/Casual outing, Spring/Mild, Breathable.
+   - `Straight blue jeans` — Bottoms, Blue, Casual/Relaxed, College/Casual outing, Spring/Mild, Stretchy.
+   - `White canvas sneakers` — Shoes, White, Casual/Comfortable, College/Casual outing, Spring/Mild, Soft.
+   - Optionally add a `Lilac cardigan` as Outerwear and a `Canvas tote` as an Accessory.
+3. Edit an item, try search and filters, and confirm a removal. Confirm that a saved outfit prevents deleting one of its pieces.
+4. In Style Profile, select preferred styles and colours; watch the preview update. Save, refresh, and confirm the choices persist. Leave optional body/colour-context fields blank if preferred.
+5. In Outfit Finder, click **Style me today** without choosing any filters. Confirm recommendations use only classified items in the account's wardrobe and profile. Then request a college outfit, try swapping an item, ask for alternatives, and save a recommendation.
+6. In Outfit Studio, select pieces manually and confirm their saved photos appear over the default avatar. Drag and resize each photo using the handles or keyboard-accessible sliders. Without a configured `OPENAI_API_KEY`, confirm that personalized generation is reported as unavailable and that the default avatar still works. To test generation, configure the backend key, select a face photo and illustration style, read and accept the consent notice, then create or regenerate the character. Verify the new illustration replaces the old one only after success, the reference photo is not shown or retained, and **Use a default avatar** removes the generated image. Try another combination, reset items, and save a named look. Transparent garment cutouts produce the cleanest overlay.
+7. Mark a saved look as worn with a date. Confirm it appears in the recent history with that date.
+8. Back in Outfit Finder, enable recent-use avoidance and choose a period. If all options are recent, confirm the explanation and click **Show recently worn looks anyway**.
+9. Sign in as a second account and confirm it cannot see the first account's wardrobe, profile, saved outfits, wardrobe images, or personalized avatar image.
+10. Visit an invalid route and confirm the not-found page offers a route back into the app.
 
-1. Register or sign in, then open **My Wardrobe**.
-2. Add three photos you own (JPEG/PNG/WebP under 5 MB):
-   - `Ivory linen shirt` — Tops, Ivory, tags `casual, classic`, occasions
-     `college, casual outing`, season `spring`, weather `mild`, notes `breathable`.
-   - `Straight blue jeans` — Bottoms, Blue, tags `casual, relaxed`, occasions
-     `college, casual outing`, season `spring`, weather `mild`, notes `stretchy`.
-   - `White canvas sneakers` — Shoes, White, tags `casual, comfortable`, occasions
-     `college, casual outing`, season `spring`, weather `mild`, notes `soft`.
-3. Use search, category and colour filters; edit a piece and try removing it.
-   The delete action asks for confirmation.
-4. In **My Style Profile**, choose Casual, add a favourite colour and a comfort
-   preference, optionally choose an avoided colour, and save. Leave the optional
-   height and complexion fields blank if you do not want them.
-5. In **Outfit Finder**, choose college, comfortable, Casual, and mild weather.
-   Expect combinations made from the saved pieces above. The page explains
-   matching preferences; it does not call an AI service.
-6. Swap a shoe or shirt in a suggestion, ask for alternatives around that
-   changed piece, and save one look. It appears under **My saved outfits**.
-7. Remove the saved outfit, then remove a wardrobe piece. While the outfit is
-   still saved, deleting one of its pieces is rejected.
-8. Sign out and sign in with a second account. That account should see its own
-   empty wardrobe/profile/saved looks. A second account cannot read, change,
-   delete, or fetch the first account's wardrobe item or photo.
-9. Refresh while signed in. If the JWT expires, the API responds `401`; the
-   frontend clears the session and requires login again.
+## Short demo sequence (3–5 minutes)
 
-## Project map
+1. **Problem and sign-in (30 seconds):** explain that WearWise helps organise owned clothes and plan combinations, then sign in and show the protected app shell.
+2. **Wardrobe and privacy (45 seconds):** show a few uploaded items and their tags; briefly explain that the API scopes item queries and photos to the authenticated user.
+3. **Style and recommendations (60–90 seconds):** show profile colour/style preview, request a college look, explain its plain-language rationale, change one piece, and save it.
+4. **Studio and wear history (60–90 seconds):** manually position actual garment photos over the default avatar, explain that the photo collage is not virtual try-on, and (if configured) show the consent-gated personalized character flow. Save the look with notes and mark it worn with today's date.
+5. **Repetition and wrap-up (30–45 seconds):** enable recent-use filtering, explain the fallback when all combinations were worn, and note the rule-based scoring and local photo-storage deployment limitation.
 
-- `frontend/src/App.jsx`: protected React Router page routes.
-- `frontend/src/context/AuthContext.jsx`: login state and safe 401 handling.
-- `frontend/src/services/api.js`: shared JSON, multipart, and authenticated
-  image requests.
-- `frontend/src/pages/`: dashboard, wardrobe, style profile, and outfit finder.
-- `frontend/src/styles/`: shared tokens plus page-specific styling.
-- `backend/src/models/`: clothing items, user style profile, saved outfit refs.
-- `backend/src/controllers/`: validated, user-scoped API operations.
-- `backend/src/middleware/imageUpload.js`: upload size/type/signature checks.
-- `backend/src/services/recommendOutfits.js`: isolated rule-based logic and tests.
+## Likely viva questions
 
-For this learning project the JWT is held in browser local storage. For a
-production system, review the threat model and consider secure HttpOnly cookies,
-CSRF protections, rate limiting, and durable private photo storage.
+**Why use React Context for authentication?**
+
+The signed-in user, token, and session status are needed across routes and components. Context provides one shared source without passing those values through every component manually.
+
+**How are passwords and routes protected?**
+
+Passwords are hashed with bcrypt before storage. JWTs are sent as bearer tokens; Express authentication middleware verifies the token, and controllers scope database access by its user ID.
+
+**How do you stop a user saving another user's clothing item in an outfit?**
+
+The save endpoint queries every submitted item ID together with the authenticated user ID and rejects the request unless all IDs are owned by that user.
+
+**Is outfit generation AI?**
+
+No. It constructs valid category combinations, filters explicit exclusions, calculates a weighted score from item/profile/request tags, and selects varied candidates. The logic is isolated in a JavaScript service and covered by tests.
+
+**How does the repeat checker work?**
+
+Worn dates are stored on each user's saved outfit. For the requested time window, the backend compares saved item-ID combinations to recommendation candidates and hides exact recent matches. The user can explicitly view them anyway.
+
+**Is the avatar a virtual fitting room?**
+
+No. The Studio manually layers wardrobe photos over an illustration and does not segment or fit garments to a body. The optional OpenAI Images API feature generates a new stylized character from a face reference, but does not guarantee exact likeness. The reference is sent only after consent, held in memory by WearWise, and not saved by this application; OpenAI's API data policy and retention terms apply.
+
+**What happens to the optional face photo?**
+
+The Express server checks the file and keeps it in memory only while making the consented OpenAI request. It stores only the generated image for the authenticated user. OpenAI states API inputs are not used for training by default, but abuse-monitoring logs can retain content for up to 30 days. This API feature has usage-based charges and is optional.
+
+**What would need to change for deployment?**
+
+Use durable private object storage for photos, configure production MongoDB/JWT/CORS values, use HTTPS and production-grade token storage/security controls, and deploy the frontend and backend with the correct API URL.
+
+## Security and production notes
+
+The development frontend stores a JWT in browser local storage. Production deployment should review the threat model and consider HttpOnly cookies, CSRF protections, rate limiting, secure transport, and durable private photo storage. Rotate any credentials that were ever exposed and never reuse them.
+
+For a course demonstration, local-disk uploads are acceptable if the backend and its upload directory remain available. Before deploying publicly, configure durable private object storage for wardrobe and generated-avatar images, ensure the deployment's filesystem and backup policy are understood, set production MongoDB/JWT/CORS/API URL values outside source control, enable HTTPS, and apply request rate limits and upload quotas. Do not deploy the OpenAI feature unless its API key, account billing limits, privacy notice, consent flow, and permitted use of reference photos have been reviewed. The automated test suite mocks provider calls; it cannot confirm live OpenAI model access, image quality, billing, or deployed storage behavior.

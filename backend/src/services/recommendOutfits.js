@@ -18,7 +18,6 @@ const MOOD_TAGS = {
   relaxed: ["relaxed", "casual", "easy", "soft"],
   experimental: ["experimental", "statement", "layered", "edgy"],
 };
-
 function normalized(value) {
   return String(value || "").trim().toLowerCase();
 }
@@ -224,15 +223,36 @@ function selectVaried(candidates, limit) {
   return selected;
 }
 
-function recommendOutfits({ items, request, profile = {} }) {
+function outfitSignature(itemIds) {
+  return [...itemIds].sort().join("|");
+}
+
+function recommendOutfits({
+  items,
+  request,
+  profile = {},
+  recentlyWornItemSets = [],
+  avoidRecentlyWorn = false,
+}) {
   const candidates = createCompleteCandidates(items, request, profile);
-  const recommendations = selectVaried(candidates, 4);
-  const closestOptions = recommendations.length
+  const metadataIncomplete = items.some((item) => !item.category);
+  const recentSignatures = new Set(recentlyWornItemSets.map(outfitSignature));
+  const freshCandidates = avoidRecentlyWorn
+    ? candidates.filter((candidate) => !recentSignatures.has(outfitSignature(candidate.itemIds)))
+    : candidates;
+  const recommendations = selectVaried(freshCandidates, 4);
+  const allRecentlyWorn = avoidRecentlyWorn && candidates.length > 0 && recommendations.length === 0;
+  const recentlyWornRecommendations = allRecentlyWorn
+    ? selectVaried(candidates, 4)
+    : [];
+  const closestOptions = candidates.length
     ? []
     : selectVaried(createClosestOptions(items, request, profile), 3);
 
   let message = "";
-  if (!recommendations.length && closestOptions.length) {
+  if (allRecentlyWorn) {
+    message = "Every complete option matching these choices was worn within your selected period. You can show those looks anyway.";
+  } else if (!recommendations.length && closestOptions.length) {
     message = "Your wardrobe is missing a piece for a complete outfit. Here are the closest combinations from items you own.";
   } else if (!recommendations.length) {
     message = items.length
@@ -241,8 +261,19 @@ function recommendOutfits({ items, request, profile = {} }) {
   } else if (recommendations.length < 4) {
     message = "Here are the distinct complete combinations currently available from your wardrobe.";
   }
+  if (metadataIncomplete) {
+    const metadataNote = " Some wardrobe items need a category before they can be included in outfit combinations; complete their details in My Wardrobe.";
+    message = message ? `${message}${metadataNote}` : metadataNote.trim();
+  }
 
-  return { recommendations, closestOptions, message };
+  return {
+    recommendations,
+    closestOptions,
+    recentlyWornRecommendations,
+    allRecentlyWorn,
+    metadataIncomplete,
+    message,
+  };
 }
 
-module.exports = { recommendOutfits, scoreOutfit };
+module.exports = { outfitSignature, recommendOutfits, scoreOutfit };

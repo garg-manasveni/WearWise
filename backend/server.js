@@ -8,6 +8,7 @@ const authRoutes = require("./src/routes/authRoutes");
 const wardrobeRoutes = require("./src/routes/wardrobeRoutes");
 const styleProfileRoutes = require("./src/routes/styleProfileRoutes");
 const outfitRoutes = require("./src/routes/outfitRoutes");
+const avatarRoutes = require("./src/routes/avatarRoutes");
 
 const dnsServers = (process.env.DNS_SERVERS || "")
   .split(",")
@@ -42,6 +43,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/wardrobe", wardrobeRoutes);
 app.use("/api/style-profile", styleProfileRoutes);
 app.use("/api/outfits", outfitRoutes);
+app.use("/api/avatar", avatarRoutes);
 
 app.use((error, request, response, next) => {
   if (error.type === "entity.parse.failed") {
@@ -50,7 +52,6 @@ app.use((error, request, response, next) => {
   if (error.status === 404 && request.path.startsWith("/uploads/")) {
     return response.status(404).json({ message: "This wardrobe image is no longer available." });
   }
-
   console.error(error);
   return response.status(500).json({ message: "An unexpected server error occurred." });
 });

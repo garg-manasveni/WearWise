@@ -11,10 +11,10 @@ const clothingItemSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true, maxlength: 80 },
     category: {
       type: String,
-      required: true,
-      enum: ["tops", "bottoms", "dresses", "outerwear", "shoes", "accessories"],
+      enum: ["", "tops", "bottoms", "dresses", "outerwear", "shoes", "accessories"],
+      default: "",
     },
-    color: { type: String, required: true, trim: true, maxlength: 40 },
+    color: { type: String, trim: true, maxlength: 40, default: "" },
     secondaryColor: { type: String, trim: true, maxlength: 40, default: "" },
     styleTags: { type: [String], default: [] },
     occasions: { type: [String], default: [] },

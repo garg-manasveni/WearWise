@@ -87,6 +87,13 @@ export const api = {
   listSavedOutfits: (token) => request("/outfits/saved", { token }),
   saveOutfit: (outfit, token) =>
     request("/outfits/saved", { method: "POST", body: JSON.stringify(outfit), token }),
+  markSavedOutfitWorn: (id, date, token) =>
+    request(`/outfits/saved/${id}/worn`, { method: "POST", body: JSON.stringify({ date }), token }),
   deleteSavedOutfit: (id, token) =>
     request(`/outfits/saved/${id}`, { method: "DELETE", token }),
+  getAvatar: (token) => request("/avatar", { token }),
+  getAvatarImage: (token) => requestBlob("/avatar/image", token),
+  generateAvatar: (formData, token) =>
+    request("/avatar/generate", { method: "POST", body: formData, token }),
+  deleteAvatar: (token) => request("/avatar", { method: "DELETE", token }),
 };

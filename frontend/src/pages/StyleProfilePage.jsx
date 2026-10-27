@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { api } from "../services/api.js";
 import ColorSwatch from "../components/ColorSwatch.jsx";
+import RequestError from "../components/RequestError.jsx";
 import { COLORS, COMFORT_PREFERENCES, STYLES } from "../constants/styleOptions.js";
 
 const EMPTY_PROFILE = {
@@ -112,10 +113,27 @@ export default function StyleProfilePage() {
         <span className="profile-mark" aria-hidden="true">W</span>
       </section>
 
-      {error && <p className="form-error" role="alert">{error}</p>}
+      <RequestError message={error} />
       {notice && <p className="success-message" role="status">{notice}</p>}
 
       <form className="profile-form" onSubmit={submit}>
+        <aside className="profile-preference-preview" aria-live="polite">
+          <div>
+            <p className="eyebrow">A PREVIEW OF YOUR PREFERENCES</p>
+            <h2>Your point of view, at a glance.</h2>
+          </div>
+          <div className="profile-preview-colors" aria-label="Preferred colours">
+            {profile.favoriteColors.length ? profile.favoriteColors.map((color) => (
+              <span className="profile-preview-color" key={color}><ColorSwatch color={color} />{color}</span>
+            )) : <span className="profile-preview-empty">Choose colours below to preview them here.</span>}
+          </div>
+          <div className="profile-preview-styles" aria-label="Preferred style tags">
+            {profile.preferredStyles.length ? profile.preferredStyles.map((style) => (
+              <span className="profile-style-tag" key={style}>{style}</span>
+            )) : <span className="profile-preview-empty">Your chosen style tags will appear here.</span>}
+          </div>
+          <p>These are styling suggestions, not rules. Every colour and style is for everyone.</p>
+        </aside>
         <section className="profile-section">
           <div className="profile-section-heading"><span>01</span><div><h2>Your point of view</h2><p>Choose as many styles as feel like you.</p></div></div>
           <ChoiceList label="Styles you enjoy" options={STYLES} selected={profile.preferredStyles} onChange={(values) => updateList("preferredStyles", values)} />

@@ -13,7 +13,8 @@
 .finder-fields .field-label select, .finder-fields .field-label input { min-width: 0; }
 .finder-anchor { grid-column: 1 / -1; }
 .profile-privacy-note { border-left-color: #c8d2c0; }
-.finder-submit { width: 100%; margin-top: 16px; }
+.finder-submit-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; grid-column: 1 / -1; margin-top: 16px; }
+.finder-submit { width: 100%; min-height: 39px; margin: 0; padding: 0 10px; font-size: 9px; }
 .recommendation-column { min-width: 0; }
 .recommendation-column > .empty-state { min-height: 330px; }
 .recommendation-heading { display: flex; align-items: end; justify-content: space-between; margin: 2px 0 10px; }
@@ -54,20 +55,27 @@
 .saved-piece { display: grid; min-width: 68px; max-width: 78px; gap: 5px; }
 .saved-piece img { width: 68px; height: 75px; object-fit: cover; background: #eee9e4; }
 .saved-piece span { overflow: hidden; color: #7d747e; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.finder-repetition { display: grid; grid-column: 1 / -1; gap: 8px; padding: 10px; border: 1px solid #e0d7e2; background: #fffdfa; }
+.finder-repeat-toggle { display: flex; align-items: center; gap: 8px; color: #615967; font-size: 10px; }
+.finder-repeat-toggle input { width: 15px; height: 15px; accent-color: var(--color-lavender); }
+.finder-repetition .field-label { max-width: 230px; }
+.finder-show-recent { min-height: 38px; margin: 0 0 12px; padding: 0 12px; font-size: 9px; }
 @media (max-width: 950px) {
   .finder-layout { grid-template-columns: 1fr; }
   .finder-form { display: grid; grid-template-columns: 1fr auto; column-gap: 18px; }
   .finder-form-heading { grid-column: 1 / -1; }
   .finder-fields { grid-column: 1; }
   .finder-form .profile-privacy-note { grid-column: 1 / -1; }
-  .finder-submit { grid-column: 1 / -1; }
+  .finder-submit-actions { grid-column: 1 / -1; }
 }
 @media (max-width: 620px) {
   .finder-ornament { width: 55px; height: 55px; flex-basis: 55px; font-size: 20px; }
   .finder-form { display: block; padding: 15px; }
+  .finder-submit-actions { grid-template-columns: 1fr; }
   .wardrobe-prompt { align-items: flex-start; flex-direction: column; }
   .finder-fields { grid-template-columns: 1fr; }
   .finder-anchor { grid-column: auto; }
+  .finder-repetition { grid-column: auto; }
   .recommendation-heading h2 { font-size: 21px; }
   .recommendation-column > .empty-state { min-height: 240px; padding: 22px; }
   .outfit-card { padding: 11px; }

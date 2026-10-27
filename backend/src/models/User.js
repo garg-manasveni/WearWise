@@ -23,6 +23,15 @@ const userSchema = new mongoose.Schema(
       minlength: 8,
       select: false,
     },
+    avatarImageKey: {
+      type: String,
+      select: false,
+    },
+    avatarIllustrationStyle: {
+      type: String,
+      enum: ["polished_2d", "soft_3d", "editorial"],
+    },
+    avatarUpdatedAt: Date,
   },
   { timestamps: true },
 );
