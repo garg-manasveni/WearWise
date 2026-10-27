@@ -70,6 +70,7 @@ Edit `backend\.env` locally:
 | `JWT_SECRET` | Private, long, randomly generated signing secret. |
 | `JWT_EXPIRES_IN` | JWT lifetime; defaults to `1h`. |
 | `CLIENT_ORIGIN` | Frontend origin allowed by CORS; defaults to `http://localhost:5173`. |
+| `CLIENT_ORIGINS` | Optional comma-separated additional frontend origins allowed by CORS. |
 | `DNS_SERVERS` | Optional comma-separated DNS server addresses, only if Atlas SRV DNS lookup fails on your network. |
 | `UPLOAD_DIR` | Local photo directory; defaults to `uploads` under `backend/`. |
 | `OPENAI_API_KEY` | Optional private server-side API key. Enables personalized avatar generation; never put it in frontend variables. |
@@ -103,7 +104,9 @@ npm.cmd run dev
 
 Open the Vite URL, normally `http://localhost:5173`. Keep both terminals running. `npm.cmd` is useful in Windows PowerShell when script execution policy blocks `npm`.
 
-The frontend API defaults to `http://localhost:5000/api`. If the API is elsewhere, create `frontend\.env` from `frontend\.env.example` and set `VITE_API_URL` to the API base URL.
+The frontend API defaults to `http://localhost:5000/api`; the Vite development server is fixed to `http://localhost:5173` so it matches the backend's default CORS origin. If you change the frontend port or API host, update `CLIENT_ORIGIN` (or add an origin to `CLIENT_ORIGINS`) in `backend\.env`, and set `VITE_API_URL` in `frontend\.env` to the API base URL. Restart both servers after changing environment files.
+
+To confirm the connection, open `http://localhost:5000/api/health` and expect `{"status":"ok"}`. Then open the Vite URL and try signing in; browser requests should be served from the configured API. If the health URL does not respond, start the backend and confirm MongoDB connects first. CORS cannot make a stopped API or unavailable MongoDB start.
 
 ## Photo storage and deployment
 
