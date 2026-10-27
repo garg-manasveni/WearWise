@@ -9,3 +9,4 @@ pnpm-debug.log*
 .DS_Store
 coverage/
 backend/uploads/
+frontend/.vite/
