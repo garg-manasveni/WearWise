@@ -55,7 +55,11 @@ app.use((error, request, response, next) => {
   console.error(error);
   return response.status(500).json({ message: "An unexpected server error occurred." });
 });
-
+app.get("/",(req,res)=>{
+  res.status(200).json({
+    message: "WearWise backend is running"
+  });
+});
 async function startServer() {
   await connectDatabase();
   app.listen(port, () => {
