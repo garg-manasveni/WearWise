@@ -1,0 +1,20 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap");
+
+* { box-sizing: border-box; }
+body { min-width: 320px; min-height: 100vh; margin: 0; }
+button, input { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+a { color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid rgb(143 118 168 / 45%); outline-offset: 3px; }
+h1, h2, h3, p { margin-top: 0; }
+h1, h2, h3 { font-family: var(--font-editorial); font-weight: 500; }
+.eyebrow { margin: 0 0 14px; color: var(--color-lavender-dark); font-size: 10px; font-weight: 700; letter-spacing: .16em; }
+.button { display: inline-flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 48px; padding: 0 20px; border: 1px solid transparent; cursor: pointer; font-size: 12px; font-weight: 600; letter-spacing: .04em; transition: background-color .18s ease, transform .18s ease, border-color .18s ease; }
+.button:hover:not(:disabled) { transform: translateY(-2px); }
+.button:disabled { cursor: wait; opacity: .68; }
+.button-primary { color: #fff; background: var(--color-lavender); }
+.button-primary:hover:not(:disabled) { background: var(--color-lavender-dark); }
+.form-error { margin: 0; padding: 11px 13px; border-left: 2px solid #a75151; color: #8c3f42; background: #f8e9e6; font-size: 12px; line-height: 1.5; }
+.loading-mark { display: block; width: 30px; height: 30px; border: 2px solid var(--color-border); border-top-color: var(--color-lavender); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }

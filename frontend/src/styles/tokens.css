@@ -1,0 +1,18 @@
+:root {
+  font-family: "DM Sans", "Avenir Next", Avenir, sans-serif;
+  color: #29262e;
+  background: #f8f5f0;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --color-ivory: #f8f5f0;
+  --color-paper: #fffdfa;
+  --color-lavender: #8f76a8;
+  --color-lavender-dark: #6f5a87;
+  --color-rose: #d9a6a0;
+  --color-sage: #dde4d8;
+  --color-charcoal: #29262e;
+  --color-muted: #77717a;
+  --color-border: #e8e1da;
+  --font-editorial: "Iowan Old Style", "Baskerville", "Palatino Linotype", Georgia, serif;
+  --shadow-soft: 0 14px 35px rgb(57 45 61 / 6%);
+}
