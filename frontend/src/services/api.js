@@ -1,4 +1,5 @@
 import { normalizeApiBaseUrl } from "./apiUrl.js";
+import { getApiErrorMessage } from "./apiError.js";
 
 const API_BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_URL);
 let unauthorizedHandler = () => {};
@@ -32,12 +33,11 @@ async function request(path, { token, ...options } = {}) {
     throw new Error("Could not reach WearWise. Check that the backend is running.");
   }
 
-  const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
     if (response.status === 401) unauthorizedHandler();
-    throw new ApiError(payload.message || "The request could not be completed.", response.status);
+    throw new ApiError(await getApiErrorMessage(response, "The request could not be completed"), response.status);
   }
-  return payload;
+  return response.json();
 }
 
 async function requestBlob(path, token) {
@@ -50,9 +50,8 @@ async function requestBlob(path, token) {
     throw new Error("Could not reach WearWise. Check that the backend is running.");
   }
   if (!response.ok) {
-    const payload = await response.json().catch(() => ({}));
     if (response.status === 401) unauthorizedHandler();
-    throw new ApiError(payload.message || "The image could not be loaded.", response.status);
+    throw new ApiError(await getApiErrorMessage(response, "The image could not be loaded"), response.status);
   }
   return response.blob();
 }
