@@ -5,6 +5,9 @@ const dns = require("node:dns");
 const express = require("express");
 const connectDatabase = require("./src/config/database");
 const authRoutes = require("./src/routes/authRoutes");
+const wardrobeRoutes = require("./src/routes/wardrobeRoutes");
+const styleProfileRoutes = require("./src/routes/styleProfileRoutes");
+const outfitRoutes = require("./src/routes/outfitRoutes");
 
 const dnsServers = (process.env.DNS_SERVERS || "")
   .split(",")
@@ -32,15 +35,20 @@ app.use(
   }),
 );
 app.use(express.json({ limit: "10kb" }));
-
 app.get("/api/health", (request, response) => {
   response.json({ status: "ok" });
 });
 app.use("/api/auth", authRoutes);
+app.use("/api/wardrobe", wardrobeRoutes);
+app.use("/api/style-profile", styleProfileRoutes);
+app.use("/api/outfits", outfitRoutes);
 
 app.use((error, request, response, next) => {
   if (error.type === "entity.parse.failed") {
     return response.status(400).json({ message: "Request body must be valid JSON." });
+  }
+  if (error.status === 404 && request.path.startsWith("/uploads/")) {
+    return response.status(404).json({ message: "This wardrobe image is no longer available." });
   }
 
   console.error(error);

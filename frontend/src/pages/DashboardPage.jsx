@@ -1,5 +1,6 @@
 import EmptyState from "../components/EmptyState.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import { Link } from "react-router-dom";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -30,21 +31,25 @@ export default function DashboardPage() {
       </div>
 
       <div className="dashboard-grid">
-        <article className="feature-card feature-lavender">
+        <Link className="feature-card feature-lavender dashboard-feature-link" to="/wardrobe">
           <div className="feature-card-top"><span>01 / COLLECT</span><span className="feature-symbol">✳</span></div>
           <div><p className="feature-kicker">YOUR EVERYDAY EDIT</p><h3>Build a wardrobe<br />that feels like you.</h3><p>Keep the pieces you love in one thoughtful place.</p></div>
           <span className="feature-arrow" aria-hidden="true">↗</span>
-        </article>
-        <article className="feature-card feature-rose">
+        </Link>
+        <Link className="feature-card feature-rose dashboard-feature-link" to="/outfit-finder">
           <div className="feature-card-top"><span>02 / DISCOVER</span><span className="feature-symbol">✳</span></div>
           <div><p className="feature-kicker">A NEW PERSPECTIVE</p><h3>Find the outfit<br />you didn’t expect.</h3><p>Make more of what’s already in your closet.</p></div>
           <span className="feature-arrow" aria-hidden="true">↗</span>
-        </article>
+        </Link>
       </div>
 
       <EmptyState eyebrow="YOUR FIRST CHAPTER" title="Nothing in the closet. Yet.">
-        Your wardrobe is waiting to take shape. Wardrobe tools are coming in a later project milestone.
+        Add clothes you own to create your digital closet, then explore outfit ideas built from those pieces.
       </EmptyState>
+      <div className="dashboard-actions">
+        <Link className="button button-primary" to="/wardrobe">Add to my wardrobe <span aria-hidden="true">↗</span></Link>
+        <Link className="dashboard-text-link" to="/style-profile">Set up my style profile</Link>
+      </div>
     </div>
   );
 }

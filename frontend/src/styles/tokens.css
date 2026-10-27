@@ -1,5 +1,6 @@
 :root {
-  font-family: "DM Sans", "Avenir Next", Avenir, sans-serif;
+  --font-sans: "DM Sans", "Avenir Next", Avenir, sans-serif;
+  font-family: var(--font-sans);
   color: #29262e;
   background: #f8f5f0;
   font-synthesis: none;

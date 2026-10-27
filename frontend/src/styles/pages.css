@@ -30,6 +30,10 @@
 .feature-card h3 { margin: 0; font-size: 24px; letter-spacing: -.025em; line-height: 1.08; }
 .feature-card p:last-child { margin: 9px 0 0; color: #77717a; font-size: 10px; }
 .feature-arrow { position: absolute; right: 19px; bottom: 19px; color: #75697b; font-size: 15px; }
+.dashboard-feature-link { color: inherit; text-decoration: none; }
+.dashboard-actions { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 17px; }
+.dashboard-text-link { color: var(--color-lavender-dark); font-size: 10px; font-weight: 600; text-decoration: none; }
+.dashboard-text-link:hover { text-decoration: underline; text-underline-offset: 3px; }
 .dashboard-page > .empty-state { min-height: 190px; }
 .placeholder-page { min-height: calc(100vh - 160px); padding-top: 35px; }
 .placeholder-page h1 { max-width: 720px; }

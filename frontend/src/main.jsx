@@ -7,6 +7,9 @@ import "./styles/tokens.css";
 import "./styles/global.css";
 import "./styles/layout.css";
 import "./styles/pages.css";
+import "./styles/wardrobe.css";
+import "./styles/profile.css";
+import "./styles/outfits.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

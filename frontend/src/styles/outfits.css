@@ -1,0 +1,77 @@
+.finder-heading { border-bottom: 0; padding-bottom: 27px; }
+.finder-ornament { display: grid; width: 78px; height: 78px; flex: 0 0 78px; place-items: center; border: 1px solid #d5c6da; border-radius: 50%; color: var(--color-rose); font-size: 28px; }
+.wardrobe-prompt { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 17px; padding: 12px 15px; border-left: 2px solid var(--color-sage); background: #f1f3ee; }
+.wardrobe-prompt p { margin: 0; color: #716b71; font-family: var(--font-editorial); font-size: 14px; font-style: italic; }
+.wardrobe-prompt .button { min-height: 36px; font-size: 9px; }
+.finder-layout { display: grid; grid-template-columns: minmax(260px, .75fr) minmax(0, 1.25fr); gap: 22px; align-items: start; }
+.finder-form { padding: 20px; border: 1px solid #e6dfe5; background: #f1edf2; }
+.finder-form-heading .eyebrow { margin-bottom: 8px; font-size: 8px; }
+.finder-form-heading h2 { margin: 0; font-size: 26px; }
+.finder-form-heading > p:last-child { margin: 7px 0 17px; color: #847b85; font-size: 10px; line-height: 1.6; }
+.finder-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+.finder-fields .field-label { min-width: 0; }
+.finder-fields .field-label select, .finder-fields .field-label input { min-width: 0; }
+.finder-anchor { grid-column: 1 / -1; }
+.profile-privacy-note { border-left-color: #c8d2c0; }
+.finder-submit { width: 100%; margin-top: 16px; }
+.recommendation-column { min-width: 0; }
+.recommendation-column > .empty-state { min-height: 330px; }
+.recommendation-heading { display: flex; align-items: end; justify-content: space-between; margin: 2px 0 10px; }
+.recommendation-heading .eyebrow { margin-bottom: 6px; font-size: 8px; }
+.recommendation-heading h2 { margin: 0; font-size: 25px; }
+.recommendation-heading > span { padding-bottom: 4px; color: #9c919b; font-size: 8px; font-weight: 700; letter-spacing: .12em; }
+.recommendation-message { margin: 0 0 13px; padding: 10px 12px; border-left: 2px solid var(--color-sage); color: #716b71; background: #f1f3ee; font-size: 10px; line-height: 1.6; }
+.recommendation-list { display: grid; gap: 13px; }
+.outfit-card { padding: 15px; border: 1px solid #e6ded8; background: var(--color-paper); box-shadow: 0 8px 22px rgb(57 45 61 / 4%); }
+.outfit-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 13px; }
+.outfit-card-header .eyebrow { margin-bottom: 5px; font-size: 7px; }
+.outfit-card-header h3 { margin: 0; font-size: 20px; }
+.outfit-score { display: flex; min-width: 43px; align-items: center; justify-content: center; gap: 4px; color: var(--color-lavender-dark); font-family: var(--font-editorial); font-size: 21px; }
+.outfit-score small { color: #a0979f; font-family: var(--font-sans); font-size: 6px; line-height: 1.4; }
+.outfit-piece-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(115px, 1fr)); gap: 8px; }
+.outfit-piece { min-width: 0; border: 1px solid #eee7e2; background: #faf7f3; }
+.outfit-piece-image { display: grid; width: 100%; aspect-ratio: 4 / 4.6; place-items: center; overflow: hidden; background: #eee9e4; }
+.outfit-piece-image img { width: 100%; height: 100%; object-fit: cover; }
+.outfit-piece-info { display: grid; gap: 4px; padding: 7px; }
+.outfit-piece-category { color: #a0959d; font-size: 7px; letter-spacing: .09em; text-transform: uppercase; }
+.outfit-piece-info strong { overflow: hidden; font-family: var(--font-editorial); font-size: 13px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.outfit-piece-color { display: flex; align-items: center; gap: 5px; color: #8a828a; font-size: 8px; }
+.swap-select select { width: 100%; height: 27px; margin-top: 3px; padding: 0 4px; border: 1px solid #e2dad3; border-radius: 0; color: #6d626e; background: #fffdfa; font-size: 8px; }
+.outfit-explanation { margin: 12px 0 0; color: #756d77; font-family: var(--font-editorial); font-size: 13px; font-style: italic; line-height: 1.5; }
+.alternatives-button { margin-top: 8px; }
+.save-outfit-row { display: flex; gap: 7px; margin-top: 11px; }
+.save-outfit-row input { min-height: 36px; }
+.save-outfit-row .button { min-height: 36px; padding: 0 10px; white-space: nowrap; font-size: 9px; }
+.missing-piece-note { margin: 12px 0 0; padding: 9px; color: #765d48; background: #f7efe5; font-size: 10px; }
+.saved-outfits-section { margin-top: 45px; }
+.saved-heading { margin-top: 0; }
+.saved-outfit-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.saved-outfit-card { padding: 14px; border: 1px solid var(--color-border); background: #fffdfa; }
+.saved-outfit-head { display: flex; justify-content: space-between; gap: 10px; }
+.saved-outfit-head .eyebrow { margin-bottom: 5px; font-size: 7px; text-transform: uppercase; }
+.saved-outfit-head h3 { margin: 0; font-size: 18px; }
+.saved-outfit-items { display: flex; gap: 7px; overflow-x: auto; margin-top: 12px; padding-bottom: 2px; }
+.saved-piece { display: grid; min-width: 68px; max-width: 78px; gap: 5px; }
+.saved-piece img { width: 68px; height: 75px; object-fit: cover; background: #eee9e4; }
+.saved-piece span { overflow: hidden; color: #7d747e; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 950px) {
+  .finder-layout { grid-template-columns: 1fr; }
+  .finder-form { display: grid; grid-template-columns: 1fr auto; column-gap: 18px; }
+  .finder-form-heading { grid-column: 1 / -1; }
+  .finder-fields { grid-column: 1; }
+  .finder-form .profile-privacy-note { grid-column: 1 / -1; }
+  .finder-submit { grid-column: 1 / -1; }
+}
+@media (max-width: 620px) {
+  .finder-ornament { width: 55px; height: 55px; flex-basis: 55px; font-size: 20px; }
+  .finder-form { display: block; padding: 15px; }
+  .wardrobe-prompt { align-items: flex-start; flex-direction: column; }
+  .finder-fields { grid-template-columns: 1fr; }
+  .finder-anchor { grid-column: auto; }
+  .recommendation-heading h2 { font-size: 21px; }
+  .recommendation-column > .empty-state { min-height: 240px; padding: 22px; }
+  .outfit-card { padding: 11px; }
+  .outfit-piece-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .saved-outfit-grid { grid-template-columns: 1fr; }
+  .save-outfit-row { flex-direction: column; }
+}

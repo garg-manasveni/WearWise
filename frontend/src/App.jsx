@@ -5,13 +5,9 @@ import DashboardPage from "./pages/DashboardPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import PlaceholderPage from "./pages/PlaceholderPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
-
-const placeholderPages = [
-  { path: "wardrobe", title: "My Wardrobe", eyebrow: "Your collection" },
-  { path: "outfit-finder", title: "Outfit Finder", eyebrow: "A little inspiration" },
-  { path: "outfit-studio", title: "Outfit Studio", eyebrow: "Your styling space" },
-  { path: "style-profile", title: "My Style Profile", eyebrow: "Getting to know you" },
-];
+import WardrobePage from "./pages/WardrobePage.jsx";
+import StyleProfilePage from "./pages/StyleProfilePage.jsx";
+import OutfitFinderPage from "./pages/OutfitFinderPage.jsx";
 
 export default function App() {
   return (
@@ -21,13 +17,13 @@ export default function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppShell />}>
           <Route path="/dashboard" element={<DashboardPage />} />
-          {placeholderPages.map((page) => (
-            <Route
-              key={page.path}
-              path={`/${page.path}`}
-              element={<PlaceholderPage {...page} />}
-            />
-          ))}
+          <Route path="/wardrobe" element={<WardrobePage />} />
+          <Route path="/outfit-finder" element={<OutfitFinderPage />} />
+          <Route path="/style-profile" element={<StyleProfilePage />} />
+          <Route
+            path="/outfit-studio"
+            element={<PlaceholderPage title="Outfit Studio" eyebrow="Your styling space" />}
+          />
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

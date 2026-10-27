@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { api, ApiError } from "../services/api.js";
+import { api, ApiError, setUnauthorizedHandler } from "../services/api.js";
 
 const AuthContext = createContext(null);
 const TOKEN_KEY = "wearwise_token";
@@ -48,6 +48,11 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (token) refreshSession();
   }, []); // Restore and validate a saved session once when the app starts.
+
+  useEffect(() => {
+    setUnauthorizedHandler(clearSession);
+    return () => setUnauthorizedHandler(() => {});
+  }, [clearSession]);
 
   const signIn = useCallback((result) => {
     window.localStorage.setItem(TOKEN_KEY, result.token);
