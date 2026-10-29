@@ -206,6 +206,8 @@ npm.cmd run build
 4. **Studio and wear history (60–90 seconds):** manually position actual garment photos over the default avatar, explain that the photo collage is not virtual try-on, and (if configured) show the consent-gated personalized character flow. Save the look with notes and mark it worn with today's date.
 5. **Repetition and wrap-up (30–45 seconds):** enable recent-use filtering, explain the fallback when all combinations were worn, and note the rule-based scoring and local photo-storage deployment limitation.
 
+#DEMO VIDEO LINK:- https://drive.google.com/file/d/1egPmZYlvZddfTrkGIe670ALTW0-o_VKQ/view?usp=drivesdk
+
 ## Likely viva questions
 
 **Why use React Context for authentication?**
